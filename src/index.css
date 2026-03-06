@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", serif;
+  
+  --color-terracotta: #C65D2E;
+  --color-sand: #E6C9A8;
+  --color-olive: #6B8E23;
+  --color-amber: #D4A017;
+  --color-cream: #F8F3E8;
+  --color-earth: #3E2F23;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-dark {
+  background: rgba(62, 47, 35, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  nav, footer, section:not(#booking), .no-print {
+    display: none !important;
+  }
+
+  #booking {
+    padding: 0 !important;
+    background: white !important;
+    color: black !important;
+  }
+
+  #booking * {
+    color: black !important;
+  }
+
+  #booking .max-w-7xl {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+  }
+
+  #booking .grid {
+    display: block !important;
+  }
+
+  /* Hide the left column (text info) */
+  #booking .grid > div:first-child {
+    display: none !important;
+  }
+
+  /* Hide the tab buttons */
+  #booking .flex.gap-4.mb-8 {
+    display: none !important;
+  }
+
+  /* Hide the form if it's visible */
+  #booking form {
+    display: none !important;
+  }
+
+  .receipt-container {
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    display: block !important;
+  }
+
+  .receipt-container > div {
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 0 !important;
+    padding: 2rem !important;
+  }
+}
