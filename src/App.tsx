@@ -6,6 +6,8 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import { 
   Users, 
   Target, 
@@ -38,6 +40,7 @@ import {
   Camera,
   Music,
   Gamepad2,
+  Mic2,
   Send,
   Check,
   AlertCircle,
@@ -70,6 +73,7 @@ import {
   Eye,
   EyeOff,
   Lock,
+  Loader2,
   Unlock,
   Key,
   CreditCard,
@@ -666,6 +670,122 @@ const WhoWeServe = () => {
   );
 };
 
+const QuotationWhatWeDo = () => (
+  <div id="quotation-what-we-do" className="bg-white border-8 border-double border-sand p-12 rounded-[3rem] shadow-2xl text-earth">
+    <div className="text-center mb-12">
+      <h2 className="text-3xl font-black text-earth mb-4 uppercase tracking-tighter">What We Do</h2>
+      <p className="text-earth/60 max-w-2xl mx-auto text-sm">We facilitate transformative experiences that move teams from performance to purpose through sports-based methodology and biblical principles.</p>
+    </div>
+
+    <div className="grid grid-cols-3 gap-8 mb-12">
+      <div className="space-y-3">
+        <div className="w-12 h-12 bg-terracotta/10 rounded-xl flex items-center justify-center text-terracotta">
+          <Target size={24} />
+        </div>
+        <h3 className="text-sm font-bold text-earth uppercase tracking-widest">Team Building</h3>
+        <p className="text-[10px] text-earth/60">Customized field activities designed to reveal character, build trust, and enhance collaboration.</p>
+      </div>
+      <div className="space-y-3">
+        <div className="w-12 h-12 bg-amber/10 rounded-xl flex items-center justify-center text-amber">
+          <Users size={24} />
+        </div>
+        <h3 className="text-sm font-bold text-earth uppercase tracking-widest">Leadership</h3>
+        <p className="text-[10px] text-earth/60">Workshops focused on developing leadership traits using our unique sports-based approach.</p>
+      </div>
+      <div className="space-y-3">
+        <div className="w-12 h-12 bg-olive/10 rounded-xl flex items-center justify-center text-olive">
+          <Heart size={24} />
+        </div>
+        <h3 className="text-sm font-bold text-earth uppercase tracking-widest">Character</h3>
+        <p className="text-[10px] text-earth/60">Integrating biblical values into every activity to forge grit and grace.</p>
+      </div>
+    </div>
+
+    <div>
+      <h3 className="text-lg font-black text-earth mb-6 uppercase tracking-widest text-center">Our Services</h3>
+      <div className="grid grid-cols-2 gap-4">
+        {[
+          "Corporate Team Building",
+          "Church Ministry Retreats",
+          "School & Institutional Camps",
+          "Leadership Development",
+          "Conflict Resolution Labs",
+          "Youth & Teens Mentorship",
+          "Sports Ministry Training",
+          "Custom Event Facilitation"
+        ].map((service, i) => (
+          <div key={i} className="p-4 bg-cream rounded-xl border border-sand flex items-center gap-2">
+            <CheckCircle2 size={16} className="text-terracotta shrink-0" />
+            <span className="font-bold text-earth text-[10px]">{service}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div className="text-center pt-12 mt-12 border-t border-sand">
+      <p className="text-[10px] text-earth/40 uppercase tracking-widest">© 2024 Chazak XP • Page 2</p>
+    </div>
+  </div>
+);
+
+const WhatWeDo = () => {
+  return (
+    <section className="py-24 bg-white">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-black text-earth mb-4 uppercase tracking-tighter">What We Do</h2>
+          <p className="text-earth/60 max-w-2xl mx-auto">We facilitate transformative experiences that move teams from performance to purpose through sports-based methodology and biblical principles.</p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-12 mb-24">
+          <div className="space-y-4">
+            <div className="w-16 h-16 bg-terracotta/10 rounded-2xl flex items-center justify-center text-terracotta">
+              <Target size={32} />
+            </div>
+            <h3 className="text-xl font-bold text-earth uppercase tracking-widest">Team Building</h3>
+            <p className="text-earth/60">Customized field activities designed to reveal character, build trust, and enhance collaboration within teams.</p>
+          </div>
+          <div className="space-y-4">
+            <div className="w-16 h-16 bg-amber/10 rounded-2xl flex items-center justify-center text-amber">
+              <Users size={32} />
+            </div>
+            <h3 className="text-xl font-bold text-earth uppercase tracking-widest">Leadership Training</h3>
+            <p className="text-earth/60">Workshops and practical sessions focused on developing leadership traits using our unique sports-based approach.</p>
+          </div>
+          <div className="space-y-4">
+            <div className="w-16 h-16 bg-olive/10 rounded-2xl flex items-center justify-center text-olive">
+              <Heart size={32} />
+            </div>
+            <h3 className="text-xl font-bold text-earth uppercase tracking-widest">Character Development</h3>
+            <p className="text-earth/60">Integrating biblical values into every activity to forge grit and grace in individuals and organizations.</p>
+          </div>
+        </div>
+
+        <div className="mb-24">
+          <h3 className="text-2xl font-black text-earth mb-8 uppercase tracking-widest text-center">Our Services</h3>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              "Corporate Team Building",
+              "Church Ministry Retreats",
+              "School & Institutional Camps",
+              "Leadership Development Workshops",
+              "Conflict Resolution Labs",
+              "Youth & Teens Mentorship",
+              "Sports Ministry Training",
+              "Custom Event Facilitation"
+            ].map((service, i) => (
+              <div key={i} className="p-6 bg-cream rounded-2xl border border-sand flex items-center gap-3">
+                <CheckCircle2 size={20} className="text-terracotta shrink-0" />
+                <span className="font-bold text-earth text-sm">{service}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 const Portfolio = () => {
   const items = [
     { img: "/images/PortfolioAction.jpg" },
@@ -773,6 +893,12 @@ const Packages = () => {
       price: "5,000",
       desc: "Engage your team with curated board games designed for strategy and connection.",
       icon: <Gamepad2 className="w-6 h-6" />
+    },
+    {
+      name: "MCeeing Package",
+      price: "10,000",
+      desc: "Professional MC services for your event (exclusive of transport).",
+      icon: <Mic2 className="w-6 h-6" />
     }
   ];
 
@@ -1076,6 +1202,7 @@ const Booking = () => {
     djAddon: false,
     photographyAddon: false,
     boardGamesAddon: false,
+    mceeingAddon: false,
     date: '',
     challenge: ''
   });
@@ -1099,6 +1226,7 @@ const Booking = () => {
   const djAddonPrice = 15000;
   const photographyAddonPrice = 10000;
   const boardGamesAddonPrice = 5000;
+  const mceeingAddonPrice = 10000;
 
   const calculateTotal = () => {
     let total = packagePrices[formData.package] || 0;
@@ -1110,6 +1238,9 @@ const Booking = () => {
     }
     if (formData.boardGamesAddon && formData.package !== 'Board Games Package') {
       total += boardGamesAddonPrice;
+    }
+    if (formData.mceeingAddon && formData.package !== 'MCeeing Package') {
+      total += mceeingAddonPrice;
     }
     return total;
   };
@@ -1129,6 +1260,7 @@ const Booking = () => {
         `*DJ Add-on:* ${formData.djAddon ? `Yes (+KSh ${djAddonPrice.toLocaleString()})` : 'No'}%0A` +
         `*Photography:* ${formData.photographyAddon ? `Yes (+KSh ${photographyAddonPrice.toLocaleString()})` : 'No'}%0A` +
         `*Board Games:* ${formData.boardGamesAddon ? `Yes (+KSh ${boardGamesAddonPrice.toLocaleString()})` : 'No'}%0A` +
+        `*MCeeing:* ${formData.mceeingAddon ? `Yes (+KSh ${mceeingAddonPrice.toLocaleString()})` : 'No'}%0A` +
         `*Preferred Date:* ${formData.date}%0A` +
         `*Challenge:* ${formData.challenge}%0A%0A` +
         `*--- Cost Summary ---*%0A` +
@@ -1148,6 +1280,7 @@ const Booking = () => {
         `DJ Add-on: ${formData.djAddon ? `Yes` : 'No'}\n` +
         `Photography: ${formData.photographyAddon ? `Yes` : 'No'}\n` +
         `Board Games: ${formData.boardGamesAddon ? `Yes` : 'No'}\n` +
+        `MCeeing: ${formData.mceeingAddon ? `Yes` : 'No'}\n` +
         `Preferred Date: ${formData.date}\n` +
         `Challenge: ${formData.challenge}\n\n` +
         `--- Cost Summary ---\n` +
@@ -1396,6 +1529,18 @@ const Booking = () => {
                         Add Board Games (+KSh 5k)
                       </label>
                     </div>
+                    <div className="flex items-center gap-3 p-4 bg-sand/20 border border-sand rounded-2xl">
+                      <input 
+                        type="checkbox" 
+                        id="mceeingAddon"
+                        className="w-5 h-5 accent-terracotta"
+                        checked={formData.mceeingAddon}
+                        onChange={(e) => setFormData({...formData, mceeingAddon: e.target.checked})}
+                      />
+                      <label htmlFor="mceeingAddon" className="text-sm font-bold text-earth cursor-pointer">
+                        Add MCeeing (+KSh 10k)
+                      </label>
+                    </div>
                   </div>
 
                 <div className="space-y-2">
@@ -1439,6 +1584,12 @@ const Booking = () => {
                     <div className="flex justify-between items-center text-sm">
                       <span className="text-sand/60">Board Games Package</span>
                       <span className="font-bold">KSh {boardGamesAddonPrice.toLocaleString()}</span>
+                    </div>
+                  )}
+                  {formData.mceeingAddon && formData.package !== 'MCeeing Package' && (
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-sand/60">MCeeing Add-on</span>
+                      <span className="font-bold">KSh {mceeingAddonPrice.toLocaleString()}</span>
                     </div>
                   )}
                   <div className="pt-3 border-t border-white/10 flex justify-between items-center">
@@ -1543,19 +1694,25 @@ const Booking = () => {
                 ) : (
                   <div className="receipt-container animate-in fade-in zoom-in duration-300">
                       <div className="border-4 border-double border-sand p-8 rounded-xl bg-white text-earth">
-                        <div className="flex justify-between items-start mb-8 pb-8 border-b border-sand">
-                          <div>
-                            <div className="flex items-center gap-2 mb-2">
-                              <Users className="text-amber w-6 h-6" />
-                              <span className="font-black text-xl tracking-tighter uppercase">CHAZAK XP</span>
-                            </div>
-                            <p className="text-xs text-earth/60 uppercase tracking-widest">Official Booking Receipt</p>
+                    <div className="flex justify-between items-start mb-8 pb-8 border-b border-sand">
+                      <div className="flex items-center gap-4">
+                        <img src="/images/logo.png" alt="Chazak XP Logo" className="w-16 h-16 object-contain" referrerPolicy="no-referrer" />
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-black text-2xl tracking-tighter uppercase">CHAZAK XP</span>
                           </div>
-                          <div className="text-right">
-                            <p className="text-xs font-bold text-earth/40 uppercase">Receipt No.</p>
-                            <p className="font-mono text-sm">{receiptData.receiptNo}</p>
+                          <p className="text-[10px] text-earth/60 uppercase tracking-widest font-bold">Official Booking Receipt</p>
+                          <div className="mt-2 space-y-0.5">
+                            <p className="text-[9px] text-earth/60 flex items-center gap-1"><Mail size={8} /> xperiencechazak@gmail.com</p>
+                            <p className="text-[9px] text-earth/60 flex items-center gap-1"><Phone size={8} /> +254 791 624 455</p>
                           </div>
                         </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs font-bold text-earth/40 uppercase">Receipt No.</p>
+                        <p className="font-mono text-sm">{receiptData.receiptNo}</p>
+                      </div>
+                    </div>
 
                         <div className="space-y-6 mb-12">
                           <div className="grid grid-cols-2 gap-8">
@@ -1816,6 +1973,26 @@ const PrivacyPolicy = () => {
 const Reports = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminCode, setAdminCode] = useState('');
+  const [adminTab, setAdminTab] = useState<'reports' | 'quotations'>('reports');
+  const [showQuotation, setShowQuotation] = useState(false);
+  const [quotationData, setQuotationData] = useState({
+    clientName: '',
+    clientEmail: '',
+    date: '',
+    services: [
+      { name: 'Nguzo Package', price: 15000, selected: false },
+      { name: 'Ngome Package', price: 25000, selected: false },
+      { name: 'Boma Package', price: 40000, selected: false },
+      { name: 'Christian DJ Add-on', price: 15000, selected: false },
+      { name: 'Photography Package', price: 10000, selected: false },
+      { name: 'Board Games Package', price: 5000, selected: false },
+      { name: 'MCeeing Package', price: 10000, selected: false },
+    ],
+    customServices: [] as { name: string, price: number }[],
+    validUntil: '',
+    quotationNo: '',
+    title: ''
+  });
   const [reportData, setReportData] = useState({
     clientName: '',
     sessionDate: '',
@@ -1841,6 +2018,50 @@ const Reports = () => {
     alert('Report request sent! Once the admin fills the report, it will be available for download here.');
   };
 
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const downloadAsPDF = async (elementIds: string | string[], fileName: string) => {
+    const ids = Array.isArray(elementIds) ? elementIds : [elementIds];
+    setIsDownloading(true);
+    try {
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+
+      for (let i = 0; i < ids.length; i++) {
+        const element = document.getElementById(ids[i]);
+        if (!element) continue;
+
+        if (i > 0) pdf.addPage();
+
+        // Hide buttons during capture
+        const buttons = element.querySelectorAll('.no-print');
+        buttons.forEach(btn => (btn as HTMLElement).style.display = 'none');
+
+        const canvas = await html2canvas(element, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff'
+        });
+
+        // Restore buttons
+        buttons.forEach(btn => (btn as HTMLElement).style.display = '');
+
+        const imgData = canvas.toDataURL('image/png');
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      }
+      pdf.save(`${fileName}.pdf`);
+    } catch (error) {
+      console.error('PDF Generation Error:', error);
+      alert('Failed to generate PDF.');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   const handleAdminLogin = () => {
     if (adminCode.toUpperCase() === 'CHAZAK_ADMIN') {
       setIsAdmin(true);
@@ -1852,6 +2073,13 @@ const Reports = () => {
   const handleGenerateReport = (e: React.FormEvent) => {
     e.preventDefault();
     setShowReport(true);
+  };
+
+  const handleGenerateQuotation = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newQuotationNo = `QUO-${Math.floor(Math.random() * 90000) + 10000}`;
+    setQuotationData(prev => ({ ...prev, quotationNo: newQuotationNo }));
+    setShowQuotation(true);
   };
 
   const printReport = () => {
@@ -1946,86 +2174,301 @@ const Reports = () => {
               </div>
             </div>
           </div>
-        ) : isAdmin && !showReport ? (
+        ) : isAdmin && !showReport && !showQuotation ? (
           <div className="space-y-12">
-            <div className="flex justify-between items-center">
-              <h2 className="text-3xl font-black text-earth">Generate Assessment Report</h2>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+              <div>
+                <h2 className="text-3xl font-black text-earth">Admin Portal</h2>
+                <div className="flex gap-4 mt-4">
+                  <button 
+                    onClick={() => setAdminTab('reports')}
+                    className={`px-6 py-2 rounded-xl font-bold transition-all ${adminTab === 'reports' ? 'bg-terracotta text-white' : 'bg-sand/20 text-earth/60 hover:bg-sand/40'}`}
+                  >
+                    Reports
+                  </button>
+                  <button 
+                    onClick={() => setAdminTab('quotations')}
+                    className={`px-6 py-2 rounded-xl font-bold transition-all ${adminTab === 'quotations' ? 'bg-terracotta text-white' : 'bg-sand/20 text-earth/60 hover:bg-sand/40'}`}
+                  >
+                    Quotations
+                  </button>
+                </div>
+              </div>
               <button onClick={() => setIsAdmin(false)} className="text-earth/40 hover:text-earth/60 font-bold">Logout</button>
             </div>
 
-            <form onSubmit={handleGenerateReport} className="space-y-8 bg-cream p-10 rounded-[3rem] border border-sand">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-earth/60">Client/Organization Name</label>
-                  <input 
-                    type="text" required
-                    className="w-full px-6 py-4 bg-white border border-sand rounded-2xl outline-none focus:ring-2 focus:ring-terracotta/50"
-                    onChange={(e) => setReportData({...reportData, clientName: e.target.value})}
-                  />
+            {adminTab === 'reports' ? (
+              <form onSubmit={handleGenerateReport} className="space-y-8 bg-cream p-10 rounded-[3rem] border border-sand">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-earth/60">Client/Organization Name</label>
+                    <input 
+                      type="text" required
+                      className="w-full px-6 py-4 bg-white border border-sand rounded-2xl outline-none focus:ring-2 focus:ring-terracotta/50"
+                      onChange={(e) => setReportData({...reportData, clientName: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-earth/60">Session Date</label>
+                    <input 
+                      type="date" required
+                      className="w-full px-6 py-4 bg-white border border-sand rounded-2xl outline-none focus:ring-2 focus:ring-terracotta/50"
+                      onChange={(e) => setReportData({...reportData, sessionDate: e.target.value})}
+                    />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-earth/60">Session Date</label>
-                  <input 
-                    type="date" required
-                    className="w-full px-6 py-4 bg-white border border-sand rounded-2xl outline-none focus:ring-2 focus:ring-terracotta/50"
-                    onChange={(e) => setReportData({...reportData, sessionDate: e.target.value})}
-                  />
+
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-earth/60">Team Building Assessment</label>
+                    <textarea rows={3} required className="w-full px-6 py-4 bg-white border border-sand rounded-2xl outline-none focus:ring-2 focus:ring-terracotta/50"
+                      placeholder="How did the team engage in building activities?"
+                      onChange={(e) => setReportData({...reportData, teamBuilding: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-earth/60">Leadership Observations</label>
+                    <textarea rows={3} required className="w-full px-6 py-4 bg-white border border-sand rounded-2xl outline-none focus:ring-2 focus:ring-terracotta/50"
+                      placeholder="Key leadership traits observed during the session."
+                      onChange={(e) => setReportData({...reportData, leadership: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-earth/60">Teamwork & Synergy</label>
+                    <textarea rows={3} required className="w-full px-6 py-4 bg-white border border-sand rounded-2xl outline-none focus:ring-2 focus:ring-terracotta/50"
+                      placeholder="Observations on collaboration and communication."
+                      onChange={(e) => setReportData({...reportData, teamwork: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-earth/60">Conflicts & Resolution</label>
+                    <textarea rows={3} required className="w-full px-6 py-4 bg-white border border-sand rounded-2xl outline-none focus:ring-2 focus:ring-terracotta/50"
+                      placeholder="How were challenges and conflicts handled?"
+                      onChange={(e) => setReportData({...reportData, conflicts: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-earth/60">Key Strengths</label>
+                    <textarea rows={3} required className="w-full px-6 py-4 bg-white border border-sand rounded-2xl outline-none focus:ring-2 focus:ring-terracotta/50"
+                      placeholder="What are the team's greatest assets?"
+                      onChange={(e) => setReportData({...reportData, strengths: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-earth/60">Areas for Personal Development</label>
+                    <textarea rows={3} required className="w-full px-6 py-4 bg-white border border-sand rounded-2xl outline-none focus:ring-2 focus:ring-terracotta/50"
+                      placeholder="Recommended areas for future growth."
+                      onChange={(e) => setReportData({...reportData, development: e.target.value})}
+                    />
+                  </div>
+                </div>
+
+                <button type="submit" className="w-full py-5 bg-earth text-white rounded-2xl font-black text-lg hover:bg-amber transition-all shadow-xl">
+                  Generate Official Report
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handleGenerateQuotation} className="space-y-8 bg-cream p-10 rounded-[3rem] border border-sand">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-earth/60">Quotation Title</label>
+                    <input 
+                      type="text" required
+                      placeholder="e.g. Team Building for Sales Team"
+                      className="w-full px-6 py-4 bg-white border border-sand rounded-2xl outline-none focus:ring-2 focus:ring-terracotta/50"
+                      onChange={(e) => setQuotationData({...quotationData, title: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-earth/60">Client Name</label>
+                    <input 
+                      type="text" required
+                      className="w-full px-6 py-4 bg-white border border-sand rounded-2xl outline-none focus:ring-2 focus:ring-terracotta/50"
+                      onChange={(e) => setQuotationData({...quotationData, clientName: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-earth/60">Client Email</label>
+                    <input 
+                      type="email" required
+                      className="w-full px-6 py-4 bg-white border border-sand rounded-2xl outline-none focus:ring-2 focus:ring-terracotta/50"
+                      onChange={(e) => setQuotationData({...quotationData, clientEmail: e.target.value})}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-earth/60">Quotation Date</label>
+                    <input 
+                      type="date" required
+                      className="w-full px-6 py-4 bg-white border border-sand rounded-2xl outline-none focus:ring-2 focus:ring-terracotta/50"
+                      onChange={(e) => setQuotationData({...quotationData, date: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-earth/60">Valid Until</label>
+                    <input 
+                      type="date" required
+                      className="w-full px-6 py-4 bg-white border border-sand rounded-2xl outline-none focus:ring-2 focus:ring-terracotta/50"
+                      onChange={(e) => setQuotationData({...quotationData, validUntil: e.target.value})}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <label className="text-xs font-bold uppercase tracking-widest text-earth/60">Select Services</label>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {quotationData.services.map((service, idx) => (
+                      <div key={idx} className="flex items-center gap-3 p-4 bg-white border border-sand rounded-2xl">
+                        <input 
+                          type="checkbox" 
+                          id={`quo-service-${idx}`}
+                          className="w-5 h-5 accent-terracotta"
+                          checked={service.selected}
+                          onChange={(e) => {
+                            const newServices = [...quotationData.services];
+                            newServices[idx].selected = e.target.checked;
+                            setQuotationData({...quotationData, services: newServices});
+                          }}
+                        />
+                        <label htmlFor={`quo-service-${idx}`} className="text-sm font-bold text-earth cursor-pointer flex justify-between w-full">
+                          <span>{service.name}</span>
+                          <span className="text-earth/40">KSh {service.price.toLocaleString()}</span>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <button type="submit" className="w-full py-5 bg-earth text-white rounded-2xl font-black text-lg hover:bg-amber transition-all shadow-xl">
+                  Generate Official Quotation
+                </button>
+              </form>
+            )}
+          </div>
+        ) : isAdmin && showQuotation ? (
+          <div className="animate-in fade-in zoom-in duration-500">
+            <div id="service-quotation" className="bg-white border-8 border-double border-sand p-12 rounded-[3rem] shadow-2xl text-earth">
+              <div className="flex justify-between items-start mb-12 pb-8 border-b border-sand">
+                <div className="flex items-center gap-4">
+                  <img src="/images/logo.png" alt="Chazak XP Logo" className="w-20 h-20 object-contain" referrerPolicy="no-referrer" />
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="font-black text-3xl tracking-tighter uppercase">CHAZAK XP</span>
+                    </div>
+                    <h1 className="text-xl font-bold text-earth uppercase tracking-widest">Official Service Quotation</h1>
+                    {quotationData.title && (
+                      <p className="text-terracotta font-black text-lg mt-1 uppercase tracking-tight">{quotationData.title}</p>
+                    )}
+                    <div className="mt-2 space-y-1">
+                      <p className="text-xs text-earth/60 flex items-center gap-1"><Mail size={12} /> xperiencechazak@gmail.com</p>
+                      <p className="text-xs text-earth/60 flex items-center gap-1"><Phone size={12} /> +254 791 624 455</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs font-bold text-earth/40 uppercase">Quotation No.</p>
+                  <p className="font-mono text-lg">{quotationData.quotationNo}</p>
                 </div>
               </div>
 
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-earth/60">Team Building Assessment</label>
-                  <textarea rows={3} required className="w-full px-6 py-4 bg-white border border-sand rounded-2xl outline-none focus:ring-2 focus:ring-terracotta/50"
-                    placeholder="How did the team engage in building activities?"
-                    onChange={(e) => setReportData({...reportData, teamBuilding: e.target.value})}
-                  />
+              <div className="grid grid-cols-2 gap-12 mb-12">
+                <div>
+                  <p className="text-[10px] font-bold text-earth/40 uppercase mb-1">Prepared For</p>
+                  <p className="font-bold text-2xl">{quotationData.clientName}</p>
+                  <p className="text-earth/60">{quotationData.clientEmail}</p>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-earth/60">Leadership Observations</label>
-                  <textarea rows={3} required className="w-full px-6 py-4 bg-white border border-sand rounded-2xl outline-none focus:ring-2 focus:ring-terracotta/50"
-                    placeholder="Key leadership traits observed during the session."
-                    onChange={(e) => setReportData({...reportData, leadership: e.target.value})}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-earth/60">Teamwork & Synergy</label>
-                  <textarea rows={3} required className="w-full px-6 py-4 bg-white border border-sand rounded-2xl outline-none focus:ring-2 focus:ring-terracotta/50"
-                    placeholder="Observations on collaboration and communication."
-                    onChange={(e) => setReportData({...reportData, teamwork: e.target.value})}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-earth/60">Conflicts & Resolution</label>
-                  <textarea rows={3} required className="w-full px-6 py-4 bg-white border border-sand rounded-2xl outline-none focus:ring-2 focus:ring-terracotta/50"
-                    placeholder="How were challenges and conflicts handled?"
-                    onChange={(e) => setReportData({...reportData, conflicts: e.target.value})}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-earth/60">Key Strengths</label>
-                  <textarea rows={3} required className="w-full px-6 py-4 bg-white border border-sand rounded-2xl outline-none focus:ring-2 focus:ring-terracotta/50"
-                    placeholder="What are the team's greatest assets?"
-                    onChange={(e) => setReportData({...reportData, strengths: e.target.value})}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-earth/60">Areas for Personal Development</label>
-                  <textarea rows={3} required className="w-full px-6 py-4 bg-white border border-sand rounded-2xl outline-none focus:ring-2 focus:ring-terracotta/50"
-                    placeholder="Recommended areas for future growth."
-                    onChange={(e) => setReportData({...reportData, development: e.target.value})}
-                  />
+                <div className="text-right">
+                  <div className="mb-4">
+                    <p className="text-[10px] font-bold text-earth/40 uppercase mb-1">Date Issued</p>
+                    <p className="font-bold text-lg">{quotationData.date}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold text-earth/40 uppercase mb-1">Valid Until</p>
+                    <p className="font-bold text-lg text-terracotta">{quotationData.validUntil}</p>
+                  </div>
                 </div>
               </div>
 
-              <button type="submit" className="w-full py-5 bg-earth text-white rounded-2xl font-black text-lg hover:bg-amber transition-all shadow-xl">
-                Generate Official Report
+              <div className="mb-12">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b-2 border-earth text-left">
+                      <th className="py-4 font-black uppercase tracking-widest text-xs">Service Description</th>
+                      <th className="py-4 font-black uppercase tracking-widest text-xs text-right">Amount (KSh)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {quotationData.services.filter(s => s.selected).map((service, idx) => (
+                      <tr key={idx} className="border-b border-sand">
+                        <td className="py-4 font-bold">{service.name}</td>
+                        <td className="py-4 text-right font-mono">KSh {service.price.toLocaleString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td className="py-8 font-black text-xl uppercase tracking-widest">Total Cost</td>
+                      <td className="py-8 text-right font-black text-3xl text-terracotta">
+                        KSh {quotationData.services.filter(s => s.selected).reduce((acc, s) => acc + s.price, 0).toLocaleString()}
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+
+              <div className="p-8 bg-cream rounded-[2rem] mb-12">
+                <h4 className="font-bold mb-4 uppercase tracking-widest text-xs text-amber">Terms & Conditions</h4>
+                <ul className="text-xs text-earth/60 space-y-2 list-disc pl-4">
+                  <li>A 50% deposit is required to secure the booking date.</li>
+                  <li>Balance is payable on or before the day of the event.</li>
+                  <li>Transport costs are exclusive and will be calculated based on location.</li>
+                  <li>Cancellations made less than 7 days to the event attract a 20% administrative fee.</li>
+                </ul>
+                <div className="mt-6 pt-6 border-t border-sand/30">
+                  <p className="text-[10px] font-bold text-earth/40 uppercase mb-2">Explore More</p>
+                  <a 
+                    href={`${window.location.origin}/packages`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-terracotta font-bold text-xs hover:underline flex items-center gap-1"
+                  >
+                    View our full range of packages on our website <ExternalLink size={10} />
+                  </a>
+                </div>
+              </div>
+
+              <div className="text-center pt-12 border-t border-sand">
+                <p className="text-sm text-earth/60 italic mb-2">"Moving teams from performance to purpose."</p>
+                <p className="text-[10px] text-earth/40 uppercase tracking-widest">© 2024 Chazak XP Official Quotation • Page 1</p>
+              </div>
+            </div>
+
+            <div className="mt-8">
+              <QuotationWhatWeDo />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 no-print">
+              <button 
+                onClick={() => setShowQuotation(false)}
+                className="py-4 bg-cream text-earth/60 rounded-2xl font-bold hover:bg-sand transition-all"
+              >
+                Edit Quotation
               </button>
-            </form>
+              <button 
+                onClick={() => downloadAsPDF(['service-quotation', 'quotation-what-we-do'], `Quotation_${quotationData.clientName.replace(/\s+/g, '_')}`)}
+                disabled={isDownloading}
+                className="py-4 bg-olive text-white rounded-2xl font-bold hover:bg-olive/90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                {isDownloading ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />} 
+                {isDownloading ? 'Downloading...' : 'Save PDF'}
+              </button>
+            </div>
           </div>
         ) : (
           <div className="animate-in fade-in zoom-in duration-500">
-            <div className="bg-white border-8 border-double border-sand p-12 rounded-[3rem] shadow-2xl text-earth">
+            <div id="assessment-report" className="bg-white border-8 border-double border-sand p-12 rounded-[3rem] shadow-2xl text-earth">
               <div className="flex justify-between items-start mb-12 pb-8 border-b border-sand">
                 <div>
                   <div className="flex items-center gap-2 mb-4">
@@ -2098,7 +2541,7 @@ const Reports = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mt-12 no-print">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-12 no-print">
               <button 
                 onClick={() => setShowReport(false)}
                 className="py-5 bg-cream text-earth/60 rounded-2xl font-bold hover:bg-sand transition-all"
@@ -2106,10 +2549,12 @@ const Reports = () => {
                 Back to Generator
               </button>
               <button 
-                onClick={printReport}
-                className="py-5 bg-terracotta text-white rounded-2xl font-bold hover:bg-amber transition-all flex items-center justify-center gap-2 shadow-xl"
+                onClick={() => downloadAsPDF('assessment-report', `Assessment_Report_${reportData.clientName.replace(/\s+/g, '_')}`)}
+                disabled={isDownloading}
+                className="py-5 bg-olive text-white rounded-2xl font-bold hover:bg-olive/90 transition-all flex items-center justify-center gap-2 shadow-xl disabled:opacity-50"
               >
-                <Printer size={20} /> Download Report (PDF)
+                {isDownloading ? <Loader2 size={20} className="animate-spin" /> : <Download size={20} />} 
+                {isDownloading ? 'Downloading...' : 'Save PDF'}
               </button>
             </div>
           </div>
