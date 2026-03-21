@@ -1255,7 +1255,37 @@ const Booking = () => {
             logging: true,
             backgroundColor: '#ffffff',
             windowWidth: element.scrollWidth,
-            windowHeight: element.scrollHeight
+            windowHeight: element.scrollHeight,
+            onclone: (clonedDoc) => {
+              // Fix for html2canvas failing on modern CSS color functions like oklab/oklch
+              const style = clonedDoc.createElement('style');
+              style.innerHTML = `
+                * {
+                  color-scheme: light !important;
+                  -webkit-print-color-adjust: exact !important;
+                  print-color-adjust: exact !important;
+                }
+              `;
+              clonedDoc.head.appendChild(style);
+
+              // Force computed styles to inline styles to bypass CSS parser issues
+              const allElements = clonedDoc.getElementsByTagName('*');
+              for (let j = 0; j < allElements.length; j++) {
+                const el = allElements[j] as HTMLElement;
+                try {
+                  const computed = window.getComputedStyle(el);
+                  if (computed.color && (computed.color.includes('okl') || computed.color.includes('color-mix'))) {
+                    el.style.color = computed.color;
+                  }
+                  if (computed.backgroundColor && (computed.backgroundColor.includes('okl') || computed.backgroundColor.includes('color-mix'))) {
+                    el.style.backgroundColor = computed.backgroundColor;
+                  }
+                  if (computed.borderColor && (computed.borderColor.includes('okl') || computed.borderColor.includes('color-mix'))) {
+                    el.style.borderColor = computed.borderColor;
+                  }
+                } catch (e) {}
+              }
+            }
           });
 
           // Restore buttons
@@ -2124,7 +2154,37 @@ const Reports = () => {
             logging: true,
             backgroundColor: '#ffffff',
             windowWidth: element.scrollWidth,
-            windowHeight: element.scrollHeight
+            windowHeight: element.scrollHeight,
+            onclone: (clonedDoc) => {
+              // Fix for html2canvas failing on modern CSS color functions like oklab/oklch
+              const style = clonedDoc.createElement('style');
+              style.innerHTML = `
+                * {
+                  color-scheme: light !important;
+                  -webkit-print-color-adjust: exact !important;
+                  print-color-adjust: exact !important;
+                }
+              `;
+              clonedDoc.head.appendChild(style);
+
+              // Force computed styles to inline styles to bypass CSS parser issues
+              const allElements = clonedDoc.getElementsByTagName('*');
+              for (let j = 0; j < allElements.length; j++) {
+                const el = allElements[j] as HTMLElement;
+                try {
+                  const computed = window.getComputedStyle(el);
+                  if (computed.color && (computed.color.includes('okl') || computed.color.includes('color-mix'))) {
+                    el.style.color = computed.color;
+                  }
+                  if (computed.backgroundColor && (computed.backgroundColor.includes('okl') || computed.backgroundColor.includes('color-mix'))) {
+                    el.style.backgroundColor = computed.backgroundColor;
+                  }
+                  if (computed.borderColor && (computed.borderColor.includes('okl') || computed.borderColor.includes('color-mix'))) {
+                    el.style.borderColor = computed.borderColor;
+                  }
+                } catch (e) {}
+              }
+            }
           });
 
           // Restore buttons

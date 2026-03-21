@@ -13,6 +13,41 @@
   --color-earth: #3E2F23;
 }
 
+/* Fix for html2canvas and Tailwind 4 oklab/oklch issues */
+@layer utilities {
+  .text-earth\/40 { color: rgba(62, 47, 35, 0.4) !important; }
+  .text-earth\/60 { color: rgba(62, 47, 35, 0.6) !important; }
+  .text-earth\/70 { color: rgba(62, 47, 35, 0.7) !important; }
+  .text-earth\/80 { color: rgba(62, 47, 35, 0.8) !important; }
+  .text-white\/80 { color: rgba(255, 255, 255, 0.8) !important; }
+  .text-white\/30 { color: rgba(255, 255, 255, 0.3) !important; }
+  .text-sand\/60 { color: rgba(230, 201, 168, 0.6) !important; }
+  .text-sand\/50 { color: rgba(230, 201, 168, 0.5) !important; }
+  .text-sand\/80 { color: rgba(230, 201, 168, 0.8) !important; }
+  
+  .bg-earth\/95 { background-color: rgba(62, 47, 35, 0.95) !important; }
+  .bg-earth\/20 { background-color: rgba(62, 47, 35, 0.2) !important; }
+  .bg-earth\/40 { background-color: rgba(62, 47, 35, 0.4) !important; }
+  .bg-earth\/5 { background-color: rgba(62, 47, 35, 0.05) !important; }
+  .bg-amber\/10 { background-color: rgba(212, 160, 23, 0.1) !important; }
+  .bg-amber\/20 { background-color: rgba(212, 160, 23, 0.2) !important; }
+  .bg-terracotta\/10 { background-color: rgba(198, 93, 46, 0.1) !important; }
+  .bg-olive\/10 { background-color: rgba(107, 142, 35, 0.1) !important; }
+  .bg-sand\/20 { background-color: rgba(230, 201, 168, 0.2) !important; }
+  .bg-sand\/10 { background-color: rgba(230, 201, 168, 0.1) !important; }
+  .bg-white\/10 { background-color: rgba(255, 255, 255, 0.1) !important; }
+  .bg-white\/5 { background-color: rgba(255, 255, 255, 0.05) !important; }
+  
+  .border-white\/10 { border-color: rgba(255, 255, 255, 0.1) !important; }
+  .border-white\/30 { border-color: rgba(255, 255, 255, 0.3) !important; }
+  .border-black\/5 { border-color: rgba(0, 0, 0, 0.05) !important; }
+  .border-sand\/30 { border-color: rgba(230, 201, 168, 0.3) !important; }
+  .border-sand\/50 { border-color: rgba(230, 201, 168, 0.5) !important; }
+  .border-amber\/20 { border-color: rgba(212, 160, 23, 0.2) !important; }
+  .border-amber\/30 { border-color: rgba(212, 160, 23, 0.3) !important; }
+  .border-olive\/20 { border-color: rgba(107, 142, 35, 0.2) !important; }
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
