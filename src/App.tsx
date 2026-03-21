@@ -74,6 +74,7 @@ import {
   EyeOff,
   Lock,
   Loader2,
+  Share2,
   Unlock,
   Key,
   CreditCard,
@@ -87,7 +88,6 @@ import {
   ChevronUp,
   MoreHorizontal,
   MoreVertical,
-  Share2,
   Heart as HeartIcon,
   MessageCircle,
   Repeat,
@@ -555,12 +555,12 @@ const Mission = () => {
             <div className="relative z-10 p-8 md:p-12 bg-earth rounded-3xl shadow-2xl text-white">
               <Quote className="text-amber w-12 h-12 mb-6 opacity-50" />
               <p className="text-2xl md:text-3xl font-serif italic leading-relaxed mb-8">
-                "For physical training is of some value, but godliness has value for all things, holding promise for both the present life and the life to come."
+                "Though one may be overpowered, two can defend themselves. A cord of three strands is not quickly broken."
               </p>
               <p className="text-amber font-bold mb-8 italic">Chazak: Hebrew for Strength.</p>
               <div className="flex items-center gap-4">
                 <div className="h-px w-12 bg-amber" />
-                <span className="font-bold tracking-widest uppercase text-amber">1 Timothy 4:8</span>
+                <span className="font-bold tracking-widest uppercase text-amber">Ecclesiastes 4:12</span>
               </div>
             </div>
             <div className="absolute -bottom-6 -right-6 w-48 h-48 bg-amber/20 rounded-full blur-3xl -z-10" />
@@ -610,7 +610,7 @@ const WhoWeServe = () => {
     },
     {
       title: "Spiritual Corporate Bodies",
-      desc: "Developing marketplace leaders who lead with 'Godly Grit,' integrity, and a servant’s heart.",
+      desc: "Developing marketplace leaders who lead with 'Godly Strength,' integrity, and a servant’s heart.",
       icon: <Target className="w-8 h-8" />,
       image: "/images/CorporateGroups.jpg"
     },
@@ -697,7 +697,7 @@ const QuotationWhatWeDo = () => (
           <Heart size={24} />
         </div>
         <h3 className="text-sm font-bold text-earth uppercase tracking-widest">Character</h3>
-        <p className="text-[10px] text-earth/60">Integrating biblical values into every activity to forge grit and grace.</p>
+        <p className="text-[10px] text-earth/60">Integrating biblical values into every activity to forge strength and unity.</p>
       </div>
     </div>
 
@@ -757,7 +757,7 @@ const WhatWeDo = () => {
               <Heart size={32} />
             </div>
             <h3 className="text-xl font-bold text-earth uppercase tracking-widest">Character Development</h3>
-            <p className="text-earth/60">Integrating biblical values into every activity to forge grit and grace in individuals and organizations.</p>
+            <p className="text-earth/60">Integrating biblical values into every activity to forge strength and unity in individuals and organizations.</p>
           </div>
         </div>
 
@@ -1216,6 +1216,90 @@ const Booking = () => {
   });
 
   const [showReceipt, setShowReceipt] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const downloadAsPDF = async (elementIds: string | string[], fileName: string) => {
+    const ids = Array.isArray(elementIds) ? elementIds : [elementIds];
+    
+    setIsDownloading(true);
+    try {
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+
+      for (let i = 0; i < ids.length; i++) {
+        const element = document.getElementById(ids[i]);
+        if (!element) continue;
+
+        if (i > 0) pdf.addPage();
+
+        // Hide buttons during capture
+        const buttons = element.querySelectorAll('.no-print');
+        buttons.forEach(btn => (btn as HTMLElement).style.display = 'none');
+
+        const canvas = await html2canvas(element, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff'
+        });
+
+        // Restore buttons
+        buttons.forEach(btn => (btn as HTMLElement).style.display = '');
+
+        const imgData = canvas.toDataURL('image/png');
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      }
+
+      const pdfBlob = pdf.output('blob');
+      const blobURL = URL.createObjectURL(pdfBlob);
+      const pdfFile = new File([pdfBlob], `${fileName}.pdf`, { type: 'application/pdf' });
+
+      // 1. Try Native Share (Best for Mobile/WhatsApp)
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+        try {
+          await navigator.share({
+            files: [pdfFile],
+            title: 'Chazak XP Document',
+            text: `Official document from Chazak XP: ${fileName}`,
+          });
+          URL.revokeObjectURL(blobURL);
+          return;
+        } catch (shareError) {
+          console.log('Share cancelled or failed, falling back to download');
+        }
+      }
+
+      // 2. Standard Download (Desktop/Mobile Fallback)
+      const link = document.createElement('a');
+      link.href = blobURL;
+      link.download = `${fileName}.pdf`;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      
+      try {
+        link.click();
+        setTimeout(() => {
+          if (document.body.contains(link)) {
+            document.body.removeChild(link);
+          }
+          URL.revokeObjectURL(blobURL);
+        }, 100);
+      } catch (clickError) {
+        // 3. Final Fallback: Open in new tab (Mobile browsers that block downloads)
+        window.open(blobURL, '_blank');
+        setTimeout(() => URL.revokeObjectURL(blobURL), 1000);
+      }
+    } catch (error) {
+      console.error('PDF Generation Error:', error);
+      alert('Failed to generate PDF.');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   const packagePrices: Record<string, number> = {
     'Nguzo Package': 15000,
@@ -1245,80 +1329,46 @@ const Booking = () => {
     return total;
   };
 
-  const handleSubmit = (e: React.FormEvent, method: 'whatsapp' | 'email' = 'whatsapp') => {
+  const handleSubmit = (e: React.FormEvent) => {
     if (e) e.preventDefault();
     
     const total = calculateTotal();
     const deposit = total * 0.5;
     
-    if (method === 'whatsapp') {
-      const message = `*New Booking Request - Chazak XP*%0A%0A` +
-        `*Name:* ${formData.name}%0A` +
-        `*Organization:* ${formData.organization}%0A` +
-        `*Group Size:* ${formData.groupSize}%0A` +
-        `*Package:* ${formData.package} (KSh ${(packagePrices[formData.package] || 0).toLocaleString()})%0A` +
-        `*DJ Add-on:* ${formData.djAddon ? `Yes (+KSh ${djAddonPrice.toLocaleString()})` : 'No'}%0A` +
-        `*Photography:* ${formData.photographyAddon ? `Yes (+KSh ${photographyAddonPrice.toLocaleString()})` : 'No'}%0A` +
-        `*Board Games:* ${formData.boardGamesAddon ? `Yes (+KSh ${boardGamesAddonPrice.toLocaleString()})` : 'No'}%0A` +
-        `*MCeeing:* ${formData.mceeingAddon ? `Yes (+KSh ${mceeingAddonPrice.toLocaleString()})` : 'No'}%0A` +
-        `*Preferred Date:* ${formData.date}%0A` +
-        `*Challenge:* ${formData.challenge}%0A%0A` +
-        `*--- Cost Summary ---*%0A` +
-        `*Total Cost:* KSh ${total.toLocaleString()}%0A` +
-        `*Deposit Required (50%):* KSh ${deposit.toLocaleString()}%0A` +
-        `*Balance:* KSh ${deposit.toLocaleString()}`;
-      
-      window.open(`https://wa.me/254791624455?text=${message}`, '_blank');
-      alert('Booking request details prepared! Redirecting to WhatsApp for confirmation.');
-    } else {
-      const subject = `New Booking Request - Chazak XP`;
-      const body = `New Booking Request - Chazak XP\n\n` +
-        `Name: ${formData.name}\n` +
-        `Organization: ${formData.organization}\n` +
-        `Group Size: ${formData.groupSize}\n` +
-        `Package: ${formData.package} (KSh ${(packagePrices[formData.package] || 0).toLocaleString()})\n` +
-        `DJ Add-on: ${formData.djAddon ? `Yes` : 'No'}\n` +
-        `Photography: ${formData.photographyAddon ? `Yes` : 'No'}\n` +
-        `Board Games: ${formData.boardGamesAddon ? `Yes` : 'No'}\n` +
-        `MCeeing: ${formData.mceeingAddon ? `Yes` : 'No'}\n` +
-        `Preferred Date: ${formData.date}\n` +
-        `Challenge: ${formData.challenge}\n\n` +
-        `--- Cost Summary ---\n` +
-        `Total Cost: KSh ${total.toLocaleString()}\n` +
-        `Deposit Required (50%): KSh ${deposit.toLocaleString()}\n` +
-        `Balance: KSh ${deposit.toLocaleString()}`;
-      
-      window.location.href = `mailto:xperiencechazak@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      alert('Booking request details prepared! Opening your email client.');
-    }
+    const message = `*New Booking Request - Chazak XP*%0A%0A` +
+      `*Name:* ${formData.name}%0A` +
+      `*Organization:* ${formData.organization}%0A` +
+      `*Group Size:* ${formData.groupSize}%0A` +
+      `*Package:* ${formData.package} (KSh ${(packagePrices[formData.package] || 0).toLocaleString()})%0A` +
+      `*DJ Add-on:* ${formData.djAddon ? `Yes (+KSh ${djAddonPrice.toLocaleString()})` : 'No'}%0A` +
+      `*Photography:* ${formData.photographyAddon ? `Yes (+KSh ${photographyAddonPrice.toLocaleString()})` : 'No'}%0A` +
+      `*Board Games:* ${formData.boardGamesAddon ? `Yes (+KSh ${boardGamesAddonPrice.toLocaleString()})` : 'No'}%0A` +
+      `*MCeeing:* ${formData.mceeingAddon ? `Yes (+KSh ${mceeingAddonPrice.toLocaleString()})` : 'No'}%0A` +
+      `*Preferred Date:* ${formData.date}%0A` +
+      `*Challenge:* ${formData.challenge}%0A%0A` +
+      `*--- Cost Summary ---*%0A` +
+      `*Total Cost:* KSh ${total.toLocaleString()}%0A` +
+      `*Deposit Required (50%):* KSh ${deposit.toLocaleString()}%0A` +
+      `*Balance:* KSh ${deposit.toLocaleString()}`;
+    
+    window.open(`https://wa.me/254791624455?text=${message}`, '_blank');
+    alert('Booking request details prepared! Redirecting to WhatsApp for confirmation.');
   };
 
-  const handleRequestReceipt = (method: 'whatsapp' | 'email' = 'whatsapp') => {
+  const handleRequestReceipt = () => {
     if (!receiptData.bookingName || !receiptData.bookingDate || !receiptData.amountPaid) {
       alert('Please fill in your name, booking date, and amount paid before requesting a code.');
       return;
     }
 
-    if (method === 'whatsapp') {
-      const message = `*Receipt Request - Chazak XP*%0A%0A` +
-        `*Client Name:* ${receiptData.bookingName}%0A` +
-        `*Booking Date:* ${receiptData.bookingDate}%0A` +
-        `*Amount Paid:* KSh ${Number(receiptData.amountPaid).toLocaleString()}%0A%0A` +
-        `Hi Denis, I have completed my payment. Please provide the verification code to download my official receipt.`;
-      
-      window.open(`https://wa.me/254791624455?text=${message}`, '_blank');
-      alert('Receipt request details prepared! Redirecting to WhatsApp. Denis will provide you with a verification code once payment is confirmed.');
-    } else {
-      const subject = `Receipt Request - Chazak XP`;
-      const body = `Receipt Request - Chazak XP\n\n` +
-        `Client Name: ${receiptData.bookingName}\n` +
-        `Booking Date: ${receiptData.bookingDate}\n` +
-        `Amount Paid: KSh ${Number(receiptData.amountPaid).toLocaleString()}\n\n` +
-        `Hi Denis, I have completed my payment. Please provide the verification code to download my official receipt.`;
-      
-      window.location.href = `mailto:xperiencechazak@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      alert('Receipt request details prepared! Opening your email client.');
-    }
+    const message = `*Receipt Request - Chazak XP*%0A%0A` +
+      `*Client Name:* ${receiptData.bookingName}%0A` +
+      `*Booking Date:* ${receiptData.bookingDate}%0A` +
+      `*Amount Paid:* KSh ${Number(receiptData.amountPaid).toLocaleString()}%0A%0A` +
+      `Hi Denis, I have completed my payment. Please provide the verification code to download my official receipt.`;
+    
+    window.open(`https://wa.me/254791624455?text=${message}`, '_blank');
+    alert('Receipt request details prepared! Redirecting to WhatsApp. Denis will provide you with a verification code once payment is confirmed.');
   };
 
   const handleGenerateReceipt = () => {
@@ -1604,17 +1654,11 @@ const Booking = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <button 
                     type="button"
-                    onClick={(e) => handleSubmit(e as any, 'whatsapp')}
-                    className="w-full bg-terracotta text-white py-5 rounded-2xl font-bold text-lg hover:bg-amber hover:text-white transition-all shadow-xl shadow-earth/10 flex items-center justify-center gap-3"
+                    onClick={(e) => handleSubmit(e as any)}
+                    disabled={isSubmitting}
+                    className="w-full bg-terracotta text-white py-5 rounded-2xl font-bold text-lg hover:bg-amber hover:text-white transition-all shadow-xl shadow-earth/10 flex items-center justify-center gap-3 disabled:opacity-50"
                   >
                     <WhatsApp size={20} /> Book via WhatsApp
-                  </button>
-                  <button 
-                    type="button"
-                    onClick={(e) => handleSubmit(e as any, 'email')}
-                    className="w-full bg-white border-2 border-earth text-earth py-5 rounded-2xl font-bold text-lg hover:bg-cream transition-all flex items-center justify-center gap-3"
-                  >
-                    <Mail size={20} /> Book via Email
                   </button>
                 </div>
               </form>
@@ -1666,18 +1710,13 @@ const Booking = () => {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+                      <div className="pt-4">
                         <button 
-                          onClick={() => handleRequestReceipt('whatsapp')}
-                          className="w-full py-4 bg-white border-2 border-earth text-earth rounded-2xl font-bold hover:bg-cream transition-all flex items-center justify-center gap-2"
+                          onClick={() => handleRequestReceipt()}
+                          disabled={isSubmitting}
+                          className="w-full py-4 bg-white border-2 border-earth text-earth rounded-2xl font-bold hover:bg-cream transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                         >
-                          <WhatsApp size={18} /> Via WhatsApp
-                        </button>
-                        <button 
-                          onClick={() => handleRequestReceipt('email')}
-                          className="w-full py-4 bg-white border-2 border-sand text-earth/60 rounded-2xl font-bold hover:bg-cream transition-all flex items-center justify-center gap-2"
-                        >
-                          <Mail size={18} /> Via Email
+                          <WhatsApp size={18} /> Request Verification Code via WhatsApp
                         </button>
                       </div>
                       <button 
@@ -1692,7 +1731,7 @@ const Booking = () => {
                     </p>
                   </>
                 ) : (
-                  <div className="receipt-container animate-in fade-in zoom-in duration-300">
+                  <div id="booking-receipt" className="receipt-container animate-in fade-in zoom-in duration-300">
                       <div className="border-4 border-double border-sand p-8 rounded-xl bg-white text-earth">
                     <div className="flex justify-between items-start mb-8 pb-8 border-b border-sand">
                       <div className="flex items-center gap-4">
@@ -1756,6 +1795,14 @@ const Booking = () => {
                           Back
                         </button>
                         <button 
+                          onClick={() => downloadAsPDF('booking-receipt', `Receipt_${receiptData.receiptNo}`)}
+                          disabled={isDownloading}
+                          className="py-4 bg-terracotta text-white rounded-2xl font-bold hover:bg-amber transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                        >
+                          {isDownloading ? <Loader2 size={18} className="animate-spin" /> : <Share2 size={18} />} 
+                          {isDownloading ? 'Downloading...' : 'Download & Share PDF'}
+                        </button>
+                        <button 
                           onClick={() => {
                             const message = `*Official Receipt Generated - Chazak XP*%0A%0A` +
                               `*Receipt No:* ${receiptData.receiptNo}%0A` +
@@ -1768,12 +1815,6 @@ const Booking = () => {
                           className="py-4 bg-olive text-white rounded-2xl font-bold hover:bg-olive/90 transition-all flex items-center justify-center gap-2"
                         >
                           <WhatsApp size={18} /> Notify WhatsApp
-                        </button>
-                        <button 
-                          onClick={printReceipt}
-                          className="py-4 bg-terracotta text-white rounded-2xl font-bold hover:bg-amber transition-all flex items-center justify-center gap-2"
-                        >
-                          <Printer size={18} /> Print / Save PDF
                         </button>
                       </div>
                     </div>
@@ -1826,7 +1867,7 @@ const Booking = () => {
 
             <div>
               <h4 className="font-bold text-lg mb-8 uppercase tracking-widest text-amber text-sm">Location</h4>
-              <p className="text-sand text-sm mb-6">Nairobi, Kenya. Serving teams across the East African region with excellence and grit.</p>
+              <p className="text-sand text-sm mb-6">Nairobi, Kenya. Serving teams across the East African region with excellence and strength.</p>
             </div>
           </div>
 
@@ -1977,7 +2018,6 @@ const Reports = () => {
   const [showQuotation, setShowQuotation] = useState(false);
   const [quotationData, setQuotationData] = useState({
     clientName: '',
-    clientEmail: '',
     date: '',
     services: [
       { name: 'Nguzo Package', price: 15000, selected: false },
@@ -2004,20 +2044,22 @@ const Reports = () => {
     development: ''
   });
   const [showReport, setShowReport] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [requestData, setRequestData] = useState({
     clientName: '',
-    sessionDate: '',
-    email: ''
+    sessionDate: ''
   });
 
   const handleRequestReport = (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = `Report Request: ${requestData.clientName}`;
-    const body = `Hi Denis,%0A%0AI would like to request the assessment report for our session on ${requestData.sessionDate}.%0A%0AClient: ${requestData.clientName}%0AEmail: ${requestData.email}%0A%0APlease fill the report on the website so I can download it.`;
-    window.open(`mailto:xperiencechazak@gmail.com?subject=${subject}&body=${body}`);
-    alert('Report request sent! Once the admin fills the report, it will be available for download here.');
+    const message = `*Report Request - Chazak XP*%0A%0A` +
+      `*Client:* ${requestData.clientName}%0A` +
+      `*Session Date:* ${requestData.sessionDate}%0A%0A` +
+      `Hi Denis, I would like to request the assessment report for our session. Please fill it on the website so I can download it.`;
+    
+    window.open(`https://wa.me/254791624455?text=${message}`, '_blank');
+    alert('Report request details prepared! Redirecting to WhatsApp. Once the admin fills the report, it will be available for download here.');
   };
-
   const [isDownloading, setIsDownloading] = useState(false);
 
   const downloadAsPDF = async (elementIds: string | string[], fileName: string) => {
@@ -2053,7 +2095,46 @@ const Reports = () => {
 
         pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
       }
-      pdf.save(`${fileName}.pdf`);
+
+      const pdfBlob = pdf.output('blob');
+      const blobURL = URL.createObjectURL(pdfBlob);
+      const pdfFile = new File([pdfBlob], `${fileName}.pdf`, { type: 'application/pdf' });
+
+      // 1. Try Native Share (Best for Mobile/WhatsApp)
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+        try {
+          await navigator.share({
+            files: [pdfFile],
+            title: 'Chazak XP Document',
+            text: `Official document from Chazak XP: ${fileName}`,
+          });
+          URL.revokeObjectURL(blobURL);
+          return;
+        } catch (shareError) {
+          console.log('Share cancelled or failed, falling back to download');
+        }
+      }
+
+      // 2. Standard Download (Desktop/Mobile Fallback)
+      const link = document.createElement('a');
+      link.href = blobURL;
+      link.download = `${fileName}.pdf`;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      
+      try {
+        link.click();
+        setTimeout(() => {
+          if (document.body.contains(link)) {
+            document.body.removeChild(link);
+          }
+          URL.revokeObjectURL(blobURL);
+        }, 100);
+      } catch (clickError) {
+        // 3. Final Fallback: Open in new tab (Mobile browsers that block downloads)
+        window.open(blobURL, '_blank');
+        setTimeout(() => URL.revokeObjectURL(blobURL), 1000);
+      }
     } catch (error) {
       console.error('PDF Generation Error:', error);
       alert('Failed to generate PDF.');
@@ -2105,7 +2186,7 @@ const Reports = () => {
               {/* Client Request Form */}
               <div className="p-8 bg-cream rounded-[2.5rem] border border-sand shadow-sm">
                 <h3 className="text-xl font-bold text-earth mb-6 flex items-center gap-2">
-                  <Mail className="text-amber" size={20} /> Request Your Report
+                  <WhatsApp className="text-olive" size={20} /> Request Your Report
                 </h3>
                 <form onSubmit={handleRequestReport} className="space-y-4">
                   <div className="space-y-1">
@@ -2125,20 +2206,11 @@ const Reports = () => {
                       onChange={(e) => setRequestData({...requestData, sessionDate: e.target.value})}
                     />
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-earth/40">Your Email</label>
-                    <input 
-                      type="email" required
-                      className="w-full px-5 py-3 bg-white border border-sand rounded-xl outline-none focus:ring-2 focus:ring-terracotta/50"
-                      placeholder="john@example.com"
-                      onChange={(e) => setRequestData({...requestData, email: e.target.value})}
-                    />
-                  </div>
                   <button 
                     type="submit"
-                    className="w-full py-4 bg-terracotta text-white rounded-xl font-bold hover:bg-amber transition-all shadow-lg shadow-terracotta/10"
+                    className="w-full py-4 bg-olive text-white rounded-xl font-bold hover:bg-olive/90 transition-all shadow-lg shadow-olive/10 flex items-center justify-center gap-2"
                   >
-                    Send Request to Admin
+                    <WhatsApp size={18} /> Request via WhatsApp
                   </button>
                 </form>
               </div>
@@ -2287,14 +2359,6 @@ const Reports = () => {
                       onChange={(e) => setQuotationData({...quotationData, clientName: e.target.value})}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-earth/60">Client Email</label>
-                    <input 
-                      type="email" required
-                      className="w-full px-6 py-4 bg-white border border-sand rounded-2xl outline-none focus:ring-2 focus:ring-terracotta/50"
-                      onChange={(e) => setQuotationData({...quotationData, clientEmail: e.target.value})}
-                    />
-                  </div>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-6">
@@ -2377,7 +2441,6 @@ const Reports = () => {
                 <div>
                   <p className="text-[10px] font-bold text-earth/40 uppercase mb-1">Prepared For</p>
                   <p className="font-bold text-2xl">{quotationData.clientName}</p>
-                  <p className="text-earth/60">{quotationData.clientEmail}</p>
                 </div>
                 <div className="text-right">
                   <div className="mb-4">
@@ -2459,10 +2522,10 @@ const Reports = () => {
               <button 
                 onClick={() => downloadAsPDF(['service-quotation', 'quotation-what-we-do'], `Quotation_${quotationData.clientName.replace(/\s+/g, '_')}`)}
                 disabled={isDownloading}
-                className="py-4 bg-olive text-white rounded-2xl font-bold hover:bg-olive/90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                className="py-4 bg-terracotta text-white rounded-2xl font-bold hover:bg-amber transition-all flex items-center justify-center gap-2 disabled:opacity-50"
               >
-                {isDownloading ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />} 
-                {isDownloading ? 'Downloading...' : 'Save PDF'}
+                {isDownloading ? <Loader2 size={18} className="animate-spin" /> : <Share2 size={18} />} 
+                {isDownloading ? 'Downloading...' : 'Download & Share PDF'}
               </button>
             </div>
           </div>
@@ -2551,10 +2614,10 @@ const Reports = () => {
               <button 
                 onClick={() => downloadAsPDF('assessment-report', `Assessment_Report_${reportData.clientName.replace(/\s+/g, '_')}`)}
                 disabled={isDownloading}
-                className="py-5 bg-olive text-white rounded-2xl font-bold hover:bg-olive/90 transition-all flex items-center justify-center gap-2 shadow-xl disabled:opacity-50"
+                className="py-5 bg-terracotta text-white rounded-2xl font-bold hover:bg-amber transition-all flex items-center justify-center gap-2 shadow-xl disabled:opacity-50"
               >
-                {isDownloading ? <Loader2 size={20} className="animate-spin" /> : <Download size={20} />} 
-                {isDownloading ? 'Downloading...' : 'Save PDF'}
+                {isDownloading ? <Loader2 size={20} className="animate-spin" /> : <Share2 size={20} />} 
+                {isDownloading ? 'Downloading...' : 'Download & Share PDF'}
               </button>
             </div>
           </div>
@@ -2591,8 +2654,8 @@ const FeaturedHero = () => {
             viewport={{ once: true }}
           >
             <h2 className="text-4xl md:text-6xl font-black text-white mb-6 leading-tight">
-              Where <span className="text-amber italic font-serif">Grit</span> Meets <br />
-              <span className="text-terracotta">Grace.</span>
+              Where <span className="text-amber italic font-serif">Strength</span> Meets <br />
+              <span className="text-terracotta">Unity.</span>
             </h2>
             <p className="text-sand text-lg mb-8 leading-relaxed">
               We don't just facilitate games; we create environments where character is forged and leadership is tested. Our unique sports-based methodology reveals the heart of your team.
