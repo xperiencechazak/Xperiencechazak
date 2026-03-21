@@ -1223,37 +1223,60 @@ const Booking = () => {
     const ids = Array.isArray(elementIds) ? elementIds : [elementIds];
     
     setIsDownloading(true);
+    console.log('Starting PDF generation for:', ids);
+
     try {
+      // Ensure we are at the top to avoid capture issues
+      window.scrollTo(0, 0);
+      
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
 
       for (let i = 0; i < ids.length; i++) {
         const element = document.getElementById(ids[i]);
-        if (!element) continue;
+        if (!element) {
+          console.error(`Element with ID ${ids[i]} not found`);
+          continue;
+        }
 
+        console.log(`Capturing element: ${ids[i]}`);
         if (i > 0) pdf.addPage();
 
         // Hide buttons during capture
         const buttons = element.querySelectorAll('.no-print');
         buttons.forEach(btn => (btn as HTMLElement).style.display = 'none');
 
-        const canvas = await html2canvas(element, {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          backgroundColor: '#ffffff'
-        });
+        try {
+          const canvas = await html2canvas(element, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            logging: true,
+            backgroundColor: '#ffffff',
+            windowWidth: element.scrollWidth,
+            windowHeight: element.scrollHeight
+          });
 
-        // Restore buttons
-        buttons.forEach(btn => (btn as HTMLElement).style.display = '');
+          // Restore buttons
+          buttons.forEach(btn => (btn as HTMLElement).style.display = '');
 
-        const imgData = canvas.toDataURL('image/png');
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+          const imgData = canvas.toDataURL('image/png');
+          const imgProps = pdf.getImageProperties(imgData);
+          const imgWidth = pdfWidth;
+          const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
 
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+          // If image is taller than page, we might need multiple pages for this element
+          // but for now let's just scale it to fit the width
+          pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+        } catch (canvasError) {
+          console.error(`Error capturing element ${ids[i]}:`, canvasError);
+          buttons.forEach(btn => (btn as HTMLElement).style.display = '');
+          throw canvasError;
+        }
       }
 
+      console.log('PDF generated, preparing for download/share');
       const pdfBlob = pdf.output('blob');
       const blobURL = URL.createObjectURL(pdfBlob);
       const pdfFile = new File([pdfBlob], `${fileName}.pdf`, { type: 'application/pdf' });
@@ -1267,13 +1290,15 @@ const Booking = () => {
             text: `Official document from Chazak XP: ${fileName}`,
           });
           URL.revokeObjectURL(blobURL);
+          console.log('Shared successfully');
           return;
         } catch (shareError) {
-          console.log('Share cancelled or failed, falling back to download');
+          console.log('Share cancelled or failed, falling back to download', shareError);
         }
       }
 
       // 2. Standard Download (Desktop/Mobile Fallback)
+      console.log('Initiating standard download');
       const link = document.createElement('a');
       link.href = blobURL;
       link.download = `${fileName}.pdf`;
@@ -1287,15 +1312,16 @@ const Booking = () => {
             document.body.removeChild(link);
           }
           URL.revokeObjectURL(blobURL);
-        }, 100);
+        }, 1000);
       } catch (clickError) {
-        // 3. Final Fallback: Open in new tab (Mobile browsers that block downloads)
+        console.error('Download click failed:', clickError);
+        // 3. Final Fallback: Open in new tab
         window.open(blobURL, '_blank');
-        setTimeout(() => URL.revokeObjectURL(blobURL), 1000);
+        setTimeout(() => URL.revokeObjectURL(blobURL), 2000);
       }
     } catch (error) {
       console.error('PDF Generation Error:', error);
-      alert('Failed to generate PDF.');
+      alert(`Failed to generate PDF: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsDownloading(false);
     }
@@ -1940,9 +1966,10 @@ const Camps = () => {
 const PageLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
       className="min-h-screen pt-20 md:pt-0"
     >
       {children}
@@ -2065,37 +2092,58 @@ const Reports = () => {
   const downloadAsPDF = async (elementIds: string | string[], fileName: string) => {
     const ids = Array.isArray(elementIds) ? elementIds : [elementIds];
     setIsDownloading(true);
+    console.log('Starting PDF generation for:', ids);
+
     try {
+      // Ensure we are at the top to avoid capture issues
+      window.scrollTo(0, 0);
+      
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
 
       for (let i = 0; i < ids.length; i++) {
         const element = document.getElementById(ids[i]);
-        if (!element) continue;
+        if (!element) {
+          console.error(`Element with ID ${ids[i]} not found`);
+          continue;
+        }
 
+        console.log(`Capturing element: ${ids[i]}`);
         if (i > 0) pdf.addPage();
 
         // Hide buttons during capture
         const buttons = element.querySelectorAll('.no-print');
         buttons.forEach(btn => (btn as HTMLElement).style.display = 'none');
 
-        const canvas = await html2canvas(element, {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          backgroundColor: '#ffffff'
-        });
+        try {
+          const canvas = await html2canvas(element, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            logging: true,
+            backgroundColor: '#ffffff',
+            windowWidth: element.scrollWidth,
+            windowHeight: element.scrollHeight
+          });
 
-        // Restore buttons
-        buttons.forEach(btn => (btn as HTMLElement).style.display = '');
+          // Restore buttons
+          buttons.forEach(btn => (btn as HTMLElement).style.display = '');
 
-        const imgData = canvas.toDataURL('image/png');
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+          const imgData = canvas.toDataURL('image/png');
+          const imgProps = pdf.getImageProperties(imgData);
+          const imgWidth = pdfWidth;
+          const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
 
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+          pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+        } catch (canvasError) {
+          console.error(`Error capturing element ${ids[i]}:`, canvasError);
+          buttons.forEach(btn => (btn as HTMLElement).style.display = '');
+          throw canvasError;
+        }
       }
 
+      console.log('PDF generated, preparing for download/share');
       const pdfBlob = pdf.output('blob');
       const blobURL = URL.createObjectURL(pdfBlob);
       const pdfFile = new File([pdfBlob], `${fileName}.pdf`, { type: 'application/pdf' });
@@ -2109,13 +2157,15 @@ const Reports = () => {
             text: `Official document from Chazak XP: ${fileName}`,
           });
           URL.revokeObjectURL(blobURL);
+          console.log('Shared successfully');
           return;
         } catch (shareError) {
-          console.log('Share cancelled or failed, falling back to download');
+          console.log('Share cancelled or failed, falling back to download', shareError);
         }
       }
 
       // 2. Standard Download (Desktop/Mobile Fallback)
+      console.log('Initiating standard download');
       const link = document.createElement('a');
       link.href = blobURL;
       link.download = `${fileName}.pdf`;
@@ -2129,15 +2179,16 @@ const Reports = () => {
             document.body.removeChild(link);
           }
           URL.revokeObjectURL(blobURL);
-        }, 100);
+        }, 1000);
       } catch (clickError) {
-        // 3. Final Fallback: Open in new tab (Mobile browsers that block downloads)
+        console.error('Download click failed:', clickError);
+        // 3. Final Fallback: Open in new tab
         window.open(blobURL, '_blank');
-        setTimeout(() => URL.revokeObjectURL(blobURL), 1000);
+        setTimeout(() => URL.revokeObjectURL(blobURL), 2000);
       }
     } catch (error) {
       console.error('PDF Generation Error:', error);
-      alert('Failed to generate PDF.');
+      alert(`Failed to generate PDF: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsDownloading(false);
     }
@@ -2367,7 +2418,17 @@ const Reports = () => {
                     <input 
                       type="date" required
                       className="w-full px-6 py-4 bg-white border border-sand rounded-2xl outline-none focus:ring-2 focus:ring-terracotta/50"
-                      onChange={(e) => setQuotationData({...quotationData, date: e.target.value})}
+                      onChange={(e) => {
+                        const selectedDate = e.target.value;
+                        if (selectedDate) {
+                          const date = new Date(selectedDate);
+                          date.setDate(date.getDate() + 7);
+                          const validUntil = date.toISOString().split('T')[0];
+                          setQuotationData({...quotationData, date: selectedDate, validUntil});
+                        } else {
+                          setQuotationData({...quotationData, date: selectedDate});
+                        }
+                      }}
                     />
                   </div>
                   <div className="space-y-2">
@@ -2375,6 +2436,7 @@ const Reports = () => {
                     <input 
                       type="date" required
                       className="w-full px-6 py-4 bg-white border border-sand rounded-2xl outline-none focus:ring-2 focus:ring-terracotta/50"
+                      value={quotationData.validUntil}
                       onChange={(e) => setQuotationData({...quotationData, validUntil: e.target.value})}
                     />
                   </div>
@@ -2759,12 +2821,24 @@ const BookingPage = () => (
 
 // --- Main App ---
 
-export default function App() {
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
+
+const AppContent = () => {
+  const location = useLocation();
   return (
-    <Router>
-      <div className="font-sans text-earth selection:bg-amber/30 overflow-x-hidden">
-        <Navbar />
-        <Routes>
+    <div className="font-sans text-earth selection:bg-amber/30 overflow-x-hidden">
+      <Navbar />
+      <AnimatePresence mode="wait">
+        {/* @ts-ignore - key is required for AnimatePresence but not in RoutesProps */}
+        <Routes location={location} key={location.pathname}>
           <Route path="/" element={<HomePage />} />
           <Route path="/philosophy" element={<PhilosophyPage />} />
           <Route path="/serve" element={<WhoWeServePage />} />
@@ -2776,8 +2850,17 @@ export default function App() {
           <Route path="/booking" element={<BookingPage />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
         </Routes>
-        <Footer />
-      </div>
+      </AnimatePresence>
+      <Footer />
+    </div>
+  );
+};
+
+export default function App() {
+  return (
+    <Router>
+      <ScrollToTop />
+      <AppContent />
     </Router>
   );
 }
