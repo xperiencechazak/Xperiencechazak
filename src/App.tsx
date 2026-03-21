@@ -389,28 +389,27 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
         <Link to="/" className="flex items-center gap-2">
           <img src="/images/logo.png" alt="Chazak XP Logo" className="w-10 h-10 object-contain" referrerPolicy="no-referrer" />
-          <span className="font-black text-2xl tracking-tighter text-white uppercase">CHAZAK XP</span>
         </Link>
         
-        <div className="hidden md:flex gap-8 font-medium text-white/80">
+        <div className="hidden lg:flex gap-6 xl:gap-8 font-medium text-white/80">
           {navLinks.map((link) => (
             link.href.startsWith('/#') ? (
-              <a key={link.name} href={link.href} className="hover:text-amber transition-colors text-sm uppercase tracking-widest">
+              <a key={link.name} href={link.href} className="hover:text-amber transition-colors text-xs xl:text-sm uppercase tracking-widest whitespace-nowrap">
                 {link.name}
               </a>
             ) : (
-              <Link key={link.name} to={link.href} className="hover:text-amber transition-colors text-sm uppercase tracking-widest">
+              <Link key={link.name} to={link.href} className="hover:text-amber transition-colors text-xs xl:text-sm uppercase tracking-widest whitespace-nowrap">
                 {link.name}
               </Link>
             )
           ))}
         </div>
 
-        <Link to="/booking" className="hidden md:block bg-terracotta hover:bg-amber text-white px-6 py-2 rounded-full font-bold transition-all transform hover:scale-105">
+        <Link to="/booking" className="hidden xl:block bg-terracotta hover:bg-amber text-white px-6 py-2 rounded-full font-bold transition-all transform hover:scale-105 whitespace-nowrap">
           Book Chazak Xperience
         </Link>
 
-        <button className="md:hidden text-white" onClick={() => setIsOpen(!isOpen)}>
+        <button className="lg:hidden text-white" onClick={() => setIsOpen(!isOpen)}>
           {isOpen ? <X /> : <Menu />}
         </button>
       </div>
@@ -422,7 +421,7 @@ const Navbar = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-earth border-t border-white/10 overflow-hidden"
+            className="lg:hidden bg-earth border-t border-white/10 overflow-hidden"
           >
             <div className="flex flex-col p-6 gap-4">
               {navLinks.map((link) => (
@@ -723,7 +722,8 @@ const QuotationWhatWeDo = () => (
     </div>
 
     <div className="text-center pt-12 mt-12 border-t border-sand">
-      <p className="text-[10px] text-earth/40 uppercase tracking-widest">© 2024 Chazak XP • Page 2</p>
+      <p className="text-[10px] text-logo-orange uppercase tracking-widest mb-1">xperiencechazak.vercel.app</p>
+      <p className="text-[10px] text-logo-orange uppercase tracking-widest">© 2026 Chazak XP • Page 2</p>
     </div>
   </div>
 );
@@ -1822,9 +1822,6 @@ const Booking = () => {
                       <div className="flex items-center gap-4">
                         <img src="/images/logo.png" alt="Chazak XP Logo" className="w-16 h-16 object-contain" referrerPolicy="no-referrer" />
                         <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-black text-2xl tracking-tighter uppercase">CHAZAK XP</span>
-                          </div>
                           <p className="text-[10px] text-earth/60 uppercase tracking-widest font-bold">Official Booking Receipt</p>
                           <div className="mt-2 space-y-0.5">
                             <p className="text-[9px] text-earth/60 flex items-center gap-1"><Mail size={8} /> xperiencechazak@gmail.com</p>
@@ -1926,7 +1923,12 @@ const Booking = () => {
               <p className="text-sand max-w-sm mb-8 leading-relaxed">
                 Led by Denis Nzioka & Stefanie Wairimu, we use the "some value" of physical training to unlock the eternal value of godliness. Moving teams from performance to purpose.
               </p>
-              <div className="flex flex-wrap gap-4">
+              <div className="mt-4 space-y-2">
+                <p className="text-sand text-sm flex items-center gap-2"><Mail size={16} /> xperiencechazak@gmail.com</p>
+                <p className="text-sand text-sm flex items-center gap-2"><Phone size={16} /> +254 791 624 455</p>
+                <p className="text-sand text-sm flex items-center gap-2"><Globe size={16} /> xperiencechazak.vercel.app</p>
+              </div>
+              <div className="flex flex-wrap gap-4 mt-8">
                 <a href="https://wa.me/254791624455" target="_blank" rel="noopener noreferrer" className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center hover:bg-amber hover:text-white transition-all" title="WhatsApp">
                   <WhatsApp size={20} />
                 </a>
@@ -1957,7 +1959,7 @@ const Booking = () => {
           </div>
 
           <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-olive text-sm">
-            <p>© 2024 Chazak XP. All Rights Reserved.</p>
+            <p className="text-logo-orange">© 2026 Chazak XP. All Rights Reserved.</p>
             <div className="flex gap-8">
               <span>Kenya Office: Nairobi</span>
             </div>
@@ -2048,7 +2050,7 @@ const PrivacyPolicy = () => {
           >
             <h1 className="text-4xl font-black text-earth mb-8">Privacy Policy</h1>
             <div className="space-y-6 text-earth/70 leading-relaxed">
-              <p className="font-bold text-earth">Last Updated: March 2024</p>
+              <p className="font-bold text-earth">Last Updated: March 2026</p>
               <p>
                 At Chazak XP, we are committed to protecting your privacy and ensuring that your personal information is handled in a safe and responsible manner. This policy outlines how we collect, use, and protect your data.
               </p>
@@ -2598,9 +2600,6 @@ const Reports = () => {
                 <div className="flex items-center gap-4">
                   <img src="/images/logo.png" alt="Chazak XP Logo" className="w-20 h-20 object-contain" referrerPolicy="no-referrer" />
                   <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="font-black text-3xl tracking-tighter uppercase">CHAZAK XP</span>
-                    </div>
                     <h1 className="text-xl font-bold text-earth uppercase tracking-widest">Official Service Quotation</h1>
                     {quotationData.title && (
                       <p className="text-terracotta font-black text-lg mt-1 uppercase tracking-tight">{quotationData.title}</p>
@@ -2608,6 +2607,7 @@ const Reports = () => {
                     <div className="mt-2 space-y-1">
                       <p className="text-xs text-earth/60 flex items-center gap-1"><Mail size={12} /> xperiencechazak@gmail.com</p>
                       <p className="text-xs text-earth/60 flex items-center gap-1"><Phone size={12} /> +254 791 624 455</p>
+                      <p className="text-xs text-earth/60 flex items-center gap-1"><Globe size={12} /> xperiencechazak.vercel.app</p>
                     </div>
                   </div>
                 </div>
@@ -2672,7 +2672,7 @@ const Reports = () => {
                 <div className="mt-6 pt-6 border-t border-sand/30">
                   <p className="text-[10px] font-bold text-earth/40 uppercase mb-2">Explore More</p>
                   <a 
-                    href={`${window.location.origin}/packages`}
+                    href="https://xperiencechazak.vercel.app/packages"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-terracotta font-bold text-xs hover:underline flex items-center gap-1"
@@ -2684,7 +2684,8 @@ const Reports = () => {
 
               <div className="text-center pt-12 border-t border-sand">
                 <p className="text-sm text-earth/60 italic mb-2">"Moving teams from performance to purpose."</p>
-                <p className="text-[10px] text-earth/40 uppercase tracking-widest">© 2024 Chazak XP Official Quotation • Page 1</p>
+                <p className="text-[10px] text-logo-orange uppercase tracking-widest mb-1">xperiencechazak.vercel.app</p>
+                <p className="text-[10px] text-logo-orange uppercase tracking-widest">© 2026 Chazak XP Official Quotation • Page 1</p>
               </div>
             </div>
 
@@ -2713,12 +2714,11 @@ const Reports = () => {
           <div className="animate-in fade-in zoom-in duration-500">
             <div id="assessment-report" className="bg-white border-8 border-double border-sand p-12 rounded-[3rem] shadow-2xl text-earth">
               <div className="flex justify-between items-start mb-12 pb-8 border-b border-sand">
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <Users className="text-amber w-8 h-8" />
-                    <span className="font-black text-3xl tracking-tighter uppercase">CHAZAK XP</span>
+                <div className="flex items-center gap-4">
+                  <img src="/images/logo.png" alt="Chazak XP Logo" className="w-20 h-20 object-contain" referrerPolicy="no-referrer" />
+                  <div>
+                    <h1 className="text-xl font-bold text-earth uppercase tracking-widest">Team Building Assessment Report</h1>
                   </div>
-                  <h1 className="text-xl font-bold text-earth uppercase tracking-widest">Team Building Assessment Report</h1>
                 </div>
                 <div className="text-right">
                   <p className="text-xs font-bold text-earth/40 uppercase">Report ID</p>
@@ -2780,7 +2780,7 @@ const Reports = () => {
 
               <div className="text-center pt-12 border-t border-sand">
                 <p className="text-sm text-earth/60 italic mb-2">"Moving teams from performance to purpose."</p>
-                <p className="text-[10px] text-earth/40 uppercase tracking-widest">© 2024 Chazak XP Assessment System</p>
+                <p className="text-[10px] text-logo-orange uppercase tracking-widest">© 2026 Chazak XP Assessment System</p>
               </div>
             </div>
 
