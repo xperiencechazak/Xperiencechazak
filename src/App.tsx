@@ -1268,20 +1268,49 @@ const Booking = () => {
               `;
               clonedDoc.head.appendChild(style);
 
-              // Force computed styles to inline styles to bypass CSS parser issues
+              // Create a canvas to convert colors to RGBA
+              const canvas = clonedDoc.createElement('canvas');
+              canvas.width = 1;
+              canvas.height = 1;
+              const ctx = canvas.getContext('2d');
+
+              const convertToRgba = (color: string) => {
+                if (!color || (!color.includes('okl') && !color.includes('color-mix') && !color.includes('lab') && !color.includes('lch') && !color.includes('p3'))) return color;
+                if (!ctx) return color;
+                try {
+                  ctx.clearRect(0, 0, 1, 1);
+                  ctx.fillStyle = color;
+                  ctx.fillRect(0, 0, 1, 1);
+                  const data = ctx.getImageData(0, 0, 1, 1).data;
+                  // Return as rgba which html2canvas understands
+                  return `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
+                } catch (e) {
+                  return color;
+                }
+              };
+
+              // Force computed styles to standard RGBA inline styles to bypass html2canvas parser issues
               const allElements = clonedDoc.getElementsByTagName('*');
               for (let j = 0; j < allElements.length; j++) {
                 const el = allElements[j] as HTMLElement;
                 try {
                   const computed = window.getComputedStyle(el);
-                  if (computed.color && (computed.color.includes('okl') || computed.color.includes('color-mix'))) {
-                    el.style.color = computed.color;
+                  
+                  // Check and convert color properties
+                  if (computed.color) {
+                    el.style.color = convertToRgba(computed.color);
                   }
-                  if (computed.backgroundColor && (computed.backgroundColor.includes('okl') || computed.backgroundColor.includes('color-mix'))) {
-                    el.style.backgroundColor = computed.backgroundColor;
+                  if (computed.backgroundColor) {
+                    el.style.backgroundColor = convertToRgba(computed.backgroundColor);
                   }
-                  if (computed.borderColor && (computed.borderColor.includes('okl') || computed.borderColor.includes('color-mix'))) {
-                    el.style.borderColor = computed.borderColor;
+                  if (computed.borderColor) {
+                    el.style.borderColor = convertToRgba(computed.borderColor);
+                  }
+                  if (computed.fill) {
+                    el.style.fill = convertToRgba(computed.fill);
+                  }
+                  if (computed.stroke) {
+                    el.style.stroke = convertToRgba(computed.stroke);
                   }
                 } catch (e) {}
               }
@@ -2167,20 +2196,49 @@ const Reports = () => {
               `;
               clonedDoc.head.appendChild(style);
 
-              // Force computed styles to inline styles to bypass CSS parser issues
+              // Create a canvas to convert colors to RGBA
+              const canvas = clonedDoc.createElement('canvas');
+              canvas.width = 1;
+              canvas.height = 1;
+              const ctx = canvas.getContext('2d');
+
+              const convertToRgba = (color: string) => {
+                if (!color || (!color.includes('okl') && !color.includes('color-mix') && !color.includes('lab') && !color.includes('lch') && !color.includes('p3'))) return color;
+                if (!ctx) return color;
+                try {
+                  ctx.clearRect(0, 0, 1, 1);
+                  ctx.fillStyle = color;
+                  ctx.fillRect(0, 0, 1, 1);
+                  const data = ctx.getImageData(0, 0, 1, 1).data;
+                  // Return as rgba which html2canvas understands
+                  return `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
+                } catch (e) {
+                  return color;
+                }
+              };
+
+              // Force computed styles to standard RGBA inline styles to bypass html2canvas parser issues
               const allElements = clonedDoc.getElementsByTagName('*');
               for (let j = 0; j < allElements.length; j++) {
                 const el = allElements[j] as HTMLElement;
                 try {
                   const computed = window.getComputedStyle(el);
-                  if (computed.color && (computed.color.includes('okl') || computed.color.includes('color-mix'))) {
-                    el.style.color = computed.color;
+                  
+                  // Check and convert color properties
+                  if (computed.color) {
+                    el.style.color = convertToRgba(computed.color);
                   }
-                  if (computed.backgroundColor && (computed.backgroundColor.includes('okl') || computed.backgroundColor.includes('color-mix'))) {
-                    el.style.backgroundColor = computed.backgroundColor;
+                  if (computed.backgroundColor) {
+                    el.style.backgroundColor = convertToRgba(computed.backgroundColor);
                   }
-                  if (computed.borderColor && (computed.borderColor.includes('okl') || computed.borderColor.includes('color-mix'))) {
-                    el.style.borderColor = computed.borderColor;
+                  if (computed.borderColor) {
+                    el.style.borderColor = convertToRgba(computed.borderColor);
+                  }
+                  if (computed.fill) {
+                    el.style.fill = convertToRgba(computed.fill);
+                  }
+                  if (computed.stroke) {
+                    el.style.stroke = convertToRgba(computed.stroke);
                   }
                 } catch (e) {}
               }
